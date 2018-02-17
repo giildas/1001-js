@@ -1,11 +1,11 @@
 class Square {
 
-  static draw(ctx, size, color, position){
-
-    var rectX = position.x
-    var rectY = position.y
-    var rectWidth = size
-    var rectHeight = size
+  static draw(ctx, size, gap, color, position){
+    
+    var rectX = position.x + gap / 2
+    var rectY = position.y + gap / 2
+    var rectWidth = size - gap / 2
+    var rectHeight = size - gap / 2
     var cornerRadius = size/4
 
     ctx.fillStyle = color

@@ -42,11 +42,13 @@ class Piece {
   }
 
   getZoomCoef(piece){
-    let longestLineLength = piece.reduce(function (a, b) { return a.length > b.length ? a : b; });
-    let pieceMaxWidth = this.size / 3
     
-    // let coef = longestLineLength
-    return coef  || .5
+    let longestLineLength = piece.reduce( (a, b) => a.length > b.length ? a : b ).length
+
+    let pieceMaxWidth = this.size / 3
+    let pieceWidth = longestLineLength * this.sqSize
+    let coef = Math.min(1, pieceMaxWidth / pieceWidth )
+    return coef
   }
   
   draw(piece, color, index){
@@ -55,20 +57,19 @@ class Piece {
     console.log(piece)    
     let zoomCoef = this.getZoomCoef(piece)
     let taille = this.sqSize * zoomCoef
-    let gap = this.gap * zoomCoef
+    let gap = this.gap
+
     let y = this.size + 10
 
     piece.forEach(line => {
 
       let x = index * this.size/3
-
         
       line.split('').map(sq => {
-
-        Square.draw(ctx, taille, color, {x, y} )
-        x += taille + gap
+        Square.draw(ctx, taille, gap, color, {x, y} )
+        x += taille 
       })
-      y += taille + gap
+      y += taille
 
     })
 
