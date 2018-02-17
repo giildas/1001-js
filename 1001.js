@@ -7,31 +7,36 @@
 
 const canvas = document.getElementById('1001')
 
-const SIZE = 200
+const SIZE = 300
 const ROWS = 10
+const GAP_W = 3 // 3 px entre chaque carré
+const sqSize = ( SIZE - (GAP_W * (ROWS-1)) ) / ROWS
+
 canvas.width = SIZE 
 canvas.height = SIZE + SIZE/2
 
 const ctx = canvas.getContext("2d")
 
 draw()
+// 0 test
+ctx.strokeStyle = "red"
+ctx.lineWidth = 1
 
-// 1 - le fond : gris (pourait etre du css mais bon)
-function fond(){
-  ctx.fillStyle = "#DDD"
-  ctx.fillRect(0, 0, SIZE, SIZE)
-}
+ctx.strokeRect(0, 0, SIZE, SIZE )
 
 
 // 1 la grille
 function grid(){
-  ctx.fillStyle = "#DDD"
-  let nbSeparations = ROWS + 1
-  console.log("nbSeparations", nbSeparations)
-  let sqSize = (SIZE-nbSeparations) / ROWS
-  for (var i = 0; i <= ROWS; i++) {
-    ctx.fillRect(i*sqSize, 0, sqSize, sqSize)
-    
+
+
+  for (let row = 0; row < ROWS; row++) {
+    for (let col = 0; col < ROWS; col++) {
+      let position = {
+        x: col * (sqSize + GAP_W),
+        y:  row * (sqSize + GAP_W)
+      }
+      Square.draw(ctx, sqSize, "#CCC", position)
+    }
   }
 }
 
@@ -41,8 +46,7 @@ function grid(){
 
 function pieces(){
   for (var i = 0; i < 3; i++) {
-    let piece = new Piece()
-    piece.draw(i * (SIZE/3), SIZE + 20)
+    new Piece(ctx, i, SIZE, sqSize, GAP_W)
   }
 }
 
@@ -51,7 +55,6 @@ function pieces(){
 
 
 function draw() {
-  // fond()
   grid()
   pieces()
 }

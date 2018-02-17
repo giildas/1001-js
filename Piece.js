@@ -1,8 +1,8 @@
 
 class Piece {
 
-  constructor(){
-    var piecesLisible = [
+  constructor(ctx, index, size, sqSize, gap){
+    let pieces = [
     "x",
     "xx",
     "xxx",
@@ -12,7 +12,7 @@ class Piece {
     "xxoxx",
     "xxxoxxxoxxx",
     "xxxoxox",
-    ]
+    ].map(p=>p.split('o'))
 
     let colors = [
       "red",
@@ -27,27 +27,52 @@ class Piece {
 
     ]
     
-    this.pieces = piecesLisible.map(p=>p.split('o'))
-    this.i = Math.floor( Math.random() * this.pieces.length )
-    this.colors = colors
+    let random_index = Math.floor( Math.random() * pieces.length )
+    
+    
+    this.size = size
+    this.sqSize = sqSize
+    this.gap = gap
+
+
+
+    let piece = pieces[random_index]
+    let color = colors[random_index]
+    this.draw(piece, color, index)
+  }
+
+  getZoomCoef(piece){
+    let longestLineLength = piece.reduce(function (a, b) { return a.length > b.length ? a : b; });
+    let pieceMaxWidth = this.size / 3
+    
+    // let coef = longestLineLength
+    return coef  || .5
   }
   
-  draw(posX, posY){
-    let taille = 20
-    let p = this.pieces[this.i]
-    let c = this.colors[this.i]
-    ctx.fillStyle = c
-    let x = 0
-    let y = 0
-    p.forEach(line => {
+  draw(piece, color, index){
+
+  
+    console.log(piece)    
+    let zoomCoef = this.getZoomCoef(piece)
+    let taille = this.sqSize * zoomCoef
+    let gap = this.gap * zoomCoef
+    let y = this.size + 10
+
+    piece.forEach(line => {
+
+      let x = index * this.size/3
+
+        
       line.split('').map(sq => {
-        ctx.fillRect(posX + x, posY + y, taille, taille)
-        x+= taille + 1
+
+        Square.draw(ctx, taille, color, {x, y} )
+        x += taille + gap
       })
-      x = 0
-      y+= taille + 1
+      y += taille + gap
 
     })
+
+
 
   }
 }
