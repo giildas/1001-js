@@ -11,13 +11,19 @@ const SIZE = 300
 const ROWS = 10
 const GAP = 6 // 3 px entre chaque carré
 const sqSize = SIZE / ROWS
-
+const NB_PIECES = 3 
 canvas.width = SIZE 
 canvas.height = SIZE + SIZE/2
 
 const ctx = canvas.getContext("2d")
 
 draw()
+// 0 test
+// ctx.strokeStyle = "red"
+// ctx.lineWidth = 1
+// ctx.strokeRect(0, 0, SIZE, SIZE )
+
+
 // 1 la grille
 function grid(){
 
@@ -38,8 +44,8 @@ function grid(){
 // les dessiner en bas
 
 function pieces(){
-  for (var i = 0; i < 3; i++) {
-    new Piece(ctx, i, SIZE, sqSize, GAP)
+  for (var i = 0; i < NB_PIECES; i++) {
+    new Piece(ctx, i, SIZE, sqSize, GAP, NB_PIECES)
   }
 }
 
