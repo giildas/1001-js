@@ -7,6 +7,7 @@
 
 const canvas = document.getElementById('1001')
 
+const G_DEBUG = true
 const SIZE = 300
 const ROWS = 10
 const GAP = 6 // 3 px entre chaque carré
@@ -17,11 +18,15 @@ canvas.height = SIZE + SIZE/2
 
 const ctx = canvas.getContext("2d")
 
-draw()
+render()
 // 0 test
-// ctx.strokeStyle = "red"
-// ctx.lineWidth = 1
-// ctx.strokeRect(0, 0, SIZE, SIZE )
+
+if (G_DEBUG) {
+
+  ctx.strokeStyle = "red"
+  ctx.lineWidth = 1
+  ctx.strokeRect(0, 0, SIZE, SIZE )
+}
 
 
 // 1 la grille
@@ -42,10 +47,12 @@ function grid(){
 // 3 - les pieces
 // recuperer 3 pieces
 // les dessiner en bas
-
 function pieces(){
+
+
+  
   for (var i = 0; i < NB_PIECES; i++) {
-    new Piece(ctx, i, SIZE, sqSize, GAP, NB_PIECES)
+    new Piece(canvas, i, SIZE, sqSize, GAP, NB_PIECES)
   }
 }
 
@@ -53,7 +60,9 @@ function pieces(){
 
 
 
-function draw() {
+
+
+function render() {
   grid()
   pieces()
 }

@@ -1,7 +1,9 @@
 
 class Piece {
 
-  constructor(ctx, index, size, sqSize, gap, nb_pieces){
+  constructor(canvas, index, game_size, sqSize, gap, nb_pieces){
+
+
     let pieces = [
     "x",
     "xx",
@@ -29,57 +31,98 @@ class Piece {
     
     let random_index = Math.floor( Math.random() * pieces.length )
     
+    this.canvas = canvas
+    this.ctx = canvas.getContext('2d')
     
-    this.size = size
-    this.sqSize = sqSize
+    this.game_size = game_size
+
+
     this.gap = gap
-    this.pieceMaxWidth = size / nb_pieces // TODO nb pieces configurable ??
 
-
-
-    let piece = pieces[random_index]
-    let color = colors[random_index]
+    this.piece = pieces[random_index]
+    this.color = colors[random_index]
     
-    let longestLineLength = this.getLongestLineLength(piece)
-    this.pieceWidth = longestLineLength * this.sqSize
+    this.index = index
+    this.pieceMaxWidth = game_size / nb_pieces
 
+    let zoomCoef = this.getZoomCoef(sqSize)
 
-    this.draw(piece, color, index)
+    this.sqSize = sqSize * zoomCoef
+
+    this.piecePosition = this.getPosition()
+
+    this.draw()
+    this.addTouchEvents()
   }
 
-  getLongestLineLength(piece){
-    return piece.reduce( (a, b) => a.length > b.length ? a : b ).length
+  addTouchEvents(){
+    this.canvas.addEventListener('click', (e)=>{
+      let mouseX = e.offsetX
+      let mouseY = e.offsetY
+
+      if (
+        mouseX > this.piecePosition.x &&
+        mouseX < this.piecePosition.x + this.piecePosition.l &&
+        mouseY > this.piecePosition.y &&
+        mouseY < this.piecePosition.y + this.piecePosition.h
+        ) {
+        
+      }
+    })
   }
 
-  getZoomCoef(piece){    
-    let coef = Math.min(1, this.pieceMaxWidth / this.pieceWidth )
+  getLongestLineLength(){
+    return this.piece.reduce( (a, b) => a.length > b.length ? a : b ).length
+  }
+  getLongestColLength(){
+    return this.piece.length
+  }
+
+  getZoomCoef(origSqSize){
+    let longestLineLength = this.getLongestLineLength() * origSqSize;
+    let coef = Math.min(1, this.pieceMaxWidth / longestLineLength )
+    console.log("coef", coef)
     return coef
   }
 
-  getXPosition(index, coef){
-    let offset = (this.pieceMaxWidth - (coef * this.pieceWidth)) / 2
-    return index * this.pieceMaxWidth + offset
+  getPosition(){
+    let pieceLength = this.getLongestLineLength() * this.sqSize
+    let pieceHeight = this.getLongestColLength() * this.sqSize
+    let offset = (this.pieceMaxWidth - (pieceLength)) / 2
+    return {
+      x: this.index * this.pieceMaxWidth + offset,
+      y: this.game_size + 10, // 10px below game
+      l: pieceLength,
+      h: pieceHeight
+    }
+
   }
   
-  draw(piece, color, index){
+  draw(){
 
-    let zoomCoef = this.getZoomCoef(piece)
-    let taille = this.sqSize * zoomCoef
-    let gap = this.gap
+    let position =  this.getPosition()
 
-    let y = this.size + 10 // 10px below game
+    //TEST
+    if (G_DEBUG){
+      ctx.strokeStyle = "red"
+      ctx.lineWidth = 1
+      ctx.strokeRect(position.x, position.y, position.l, position.h )
+    }
 
-    piece.forEach(line => {
 
-      let x = this.getXPosition(index, zoomCoef)
+    
+    let { y } =  position
+    this.piece.forEach(line => {
+      
+      let {x} = position 
         
       line.split('').map(sq => {
-        Square.draw(ctx, taille, gap, color, {x, y} )
-        x += taille 
+        Square.draw(ctx, this.sqSize, this.gap, this.color, {x, y} )
+        x += this.sqSize 
       })
-      y += taille
+      y += this.sqSize
 
-    })
+      })
 
 
 
