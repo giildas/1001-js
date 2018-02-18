@@ -3,7 +3,7 @@
 
 I'm having fun making the famous 1001 game in canvas. This is a slow WIP, working on it whenever I can, dealing with problems as they come.
 
-    Note to myself : the name should be 1010 :sweat_smile:
+Note to myself : the name should be 1010 :sweat_smile:
 
 So far : 
 --------
