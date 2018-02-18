@@ -66,7 +66,8 @@ class Piece {
         mouseY > this.piecePosition.y &&
         mouseY < this.piecePosition.y + this.piecePosition.h
         ) {
-        
+
+        console.log("clicked on ", this.index)
       }
     })
   }
@@ -81,7 +82,6 @@ class Piece {
   getZoomCoef(origSqSize){
     let longestLineLength = this.getLongestLineLength() * origSqSize;
     let coef = Math.min(1, this.pieceMaxWidth / longestLineLength )
-    console.log("coef", coef)
     return coef
   }
 
