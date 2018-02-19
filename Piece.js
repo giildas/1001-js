@@ -49,14 +49,17 @@ class Piece {
 
     this.sqSize = sqSize * zoomCoef
 
-    this.piecePosition = this.getPosition()
+    this.piecePosition = this.getFirstPosition()
 
-    this.draw()
+    this.isMoving = false 
     this.addTouchEvents()
+
+    return this
+    // this.draw()
   }
 
   addTouchEvents(){
-    this.canvas.addEventListener('click', (e)=>{
+    this.canvas.addEventListener('mousedown', (e)=>{
       let mouseX = e.offsetX
       let mouseY = e.offsetY
 
@@ -66,8 +69,27 @@ class Piece {
         mouseY > this.piecePosition.y &&
         mouseY < this.piecePosition.y + this.piecePosition.h
         ) {
+        this.isMoving = true
+        this.piecePosition.x = mouseX - this.piecePosition.l/2
+        this.piecePosition.y = mouseY - this.piecePosition.h/2
+      }
+    })
 
-        console.log("clicked on ", this.index)
+    this.canvas.addEventListener('mousemove', (e)=>{
+      if (this.isMoving) {
+        let mouseX = e.offsetX
+        let mouseY = e.offsetY
+        this.piecePosition.x = mouseX - this.piecePosition.l/2
+        this.piecePosition.y = mouseY - this.piecePosition.h/2
+      }
+    })
+    
+    this.canvas.addEventListener('mouseup', (e)=>{
+      let mouseX = e.offsetX
+      let mouseY = e.offsetY
+
+      if (this.isMoving) {
+        this.isMoving = false
       }
     })
   }
@@ -85,7 +107,7 @@ class Piece {
     return coef
   }
 
-  getPosition(){
+  getFirstPosition(){
     let pieceLength = this.getLongestLineLength() * this.sqSize
     let pieceHeight = this.getLongestColLength() * this.sqSize
     let offset = (this.pieceMaxWidth - (pieceLength)) / 2
@@ -100,21 +122,20 @@ class Piece {
   
   draw(){
 
-    let position =  this.getPosition()
 
     //TEST
     if (G_DEBUG){
       ctx.strokeStyle = "red"
       ctx.lineWidth = 1
-      ctx.strokeRect(position.x, position.y, position.l, position.h )
+      ctx.strokeRect(this.piecePosition.x, this.piecePosition.y, this.piecePosition.l, this.piecePosition.h )
     }
 
 
     
-    let { y } =  position
+    let { y } =  this.piecePosition
     this.piece.forEach(line => {
       
-      let {x} = position 
+      let {x} = this.piecePosition 
         
       line.split('').map(sq => {
         Square.draw(ctx, this.sqSize, this.gap, this.color, {x, y} )

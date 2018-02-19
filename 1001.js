@@ -18,7 +18,9 @@ canvas.height = SIZE + SIZE/2
 
 const ctx = canvas.getContext("2d")
 
-render()
+const pieces = []
+
+init()
 // 0 test
 
 if (G_DEBUG) {
@@ -31,8 +33,6 @@ if (G_DEBUG) {
 
 // 1 la grille
 function grid(){
-
-
   for (let row = 0; row < ROWS; row++) {
     for (let col = 0; col < ROWS; col++) {
       let position = {
@@ -44,27 +44,34 @@ function grid(){
   }
 }
 
-// 3 - les pieces
-// recuperer 3 pieces
-// les dessiner en bas
-function pieces(){
 
 
+
+function init(){
+  // 1 : créer 3 pieces a stocker dans un tableau
   
+  // 3 - les pieces
   for (var i = 0; i < NB_PIECES; i++) {
-    new Piece(canvas, i, SIZE, sqSize, GAP, NB_PIECES)
+    let piece = new Piece(canvas, i, SIZE, sqSize, GAP, NB_PIECES)
+    pieces.push(piece)
   }
+
+
+  render()
+
 }
 
 
 
-
-
-
-
 function render() {
+  let rerender = pieces.some(p => p.isMoving == true)
+  
+  pieces.forEach( p => p.draw() )
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
   grid()
-  pieces()
+  pieces.forEach( p => p.draw() )
+  requestAnimationFrame(render)
+
 }
 
 
