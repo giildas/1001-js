@@ -1,55 +1,55 @@
 /***** TODO
-- class Piece en globale -> a importer (webpack ?)
-- remplacer la grille par des carrés gris
+
+* when a piece is dropped, the piece should disapear from the array 
+* the grid should evolve and draw colored squares at the same position as the dropped piece
+* so it can tell if there is a line, or a piece already there on dropping the next one
+
+
 **********/
 
 
 
 const canvas = document.getElementById('1001')
 
-const G_DEBUG = true
+const G_DEBUG = false
 const SIZE = 300
-const ROWS = 10
+const GRID_SIZE = 10
 const GAP = 6 // 3 px entre chaque carré
-const sqSize = SIZE / ROWS
+const sqSize = SIZE / GRID_SIZE
 const NB_PIECES = 3 
 canvas.width = SIZE 
 canvas.height = SIZE + SIZE/2
 
 const ctx = canvas.getContext("2d")
 
+
+
+const COLORS = [
+  "#CCC",
+  "red",
+  "green",
+  "blue",
+  "orange",
+  "purple",
+  "lime",
+  "yellow",
+  "darkblue",
+  "pink"
+]
+
+
 const pieces = []
+let grid;
+
+
+
 
 init()
-// 0 test
-
-if (G_DEBUG) {
-
-  ctx.strokeStyle = "red"
-  ctx.lineWidth = 1
-  ctx.strokeRect(0, 0, SIZE, SIZE )
-}
-
-
-// 1 la grille
-function grid(){
-  for (let row = 0; row < ROWS; row++) {
-    for (let col = 0; col < ROWS; col++) {
-      let position = {
-        x: col * sqSize,
-        y:  row * sqSize
-      }
-      Square.draw(ctx, sqSize, GAP, "#CCC", position)
-    }
-  }
-}
-
-
-
 
 function init(){
-  // 1 : créer 3 pieces a stocker dans un tableau
-  
+  // 1 la grille
+  grid = new Grid(GRID_SIZE)
+
   // 3 - les pieces
   for (var i = 0; i < NB_PIECES; i++) {
     let piece = new Piece(canvas, i, SIZE, sqSize, GAP, NB_PIECES)
@@ -64,11 +64,8 @@ function init(){
 
 
 function render() {
-  let rerender = pieces.some(p => p.isMoving == true)
-  
-  pieces.forEach( p => p.draw() )
   ctx.clearRect(0, 0, canvas.width, canvas.height)
-  grid()
+  grid.draw(sqSize, GAP, COLORS)
   pieces.forEach( p => p.draw() )
   requestAnimationFrame(render)
 

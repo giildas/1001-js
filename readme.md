@@ -11,8 +11,16 @@ So far :
 * Display grid
 * Display 3 random pieces
 * Add a click event on pieces based on their bounding box
+* Possible to move the pieces around and drop them on board. They snap to the grid
+
 
 Todo
 -----
 
-* everything else !
+* Drop conditions
+  * Don't if a part of it is out the board
+  * Don't if another piece is under
+* Create 3 more pieces when the other are dropped
+* Lines conpletion
+* Points
+* Calculate that no move is possible -> game is lost
