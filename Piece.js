@@ -45,9 +45,9 @@ class Piece {
     this.index = index
     this.pieceMaxWidth = game_size / nb_pieces
 
-    let zoomCoef = this.getZoomCoef(sqSize)
+    this.zoomCoef = this.getZoomCoef(sqSize)
 
-    this.sqSize = sqSize * zoomCoef
+    this.sqSize = sqSize
 
     this.piecePosition = this.getFirstPosition()
 
@@ -65,11 +65,12 @@ class Piece {
 
       if (
         mouseX > this.piecePosition.x &&
-        mouseX < this.piecePosition.x + this.piecePosition.l &&
+        mouseX < this.piecePosition.x + (this.piecePosition.l * this.zoomCoef) &&
         mouseY > this.piecePosition.y &&
-        mouseY < this.piecePosition.y + this.piecePosition.h
+        mouseY < this.piecePosition.y + (this.piecePosition.h * this.zoomCoef)
         ) {
         this.isMoving = true
+        this.zoomCoef = 1
         this.piecePosition.x = mouseX - this.piecePosition.l/2
         this.piecePosition.y = mouseY - this.piecePosition.h/2
       }
@@ -90,7 +91,13 @@ class Piece {
 
       if (this.isMoving) {
         this.isMoving = false
+        let snapX = Math.round(this.piecePosition.x / this.sqSize)
+        let snapY = Math.round(this.piecePosition.y / this.sqSize)
+        this.piecePosition.x = snapX * sqSize
+        this.piecePosition.y = snapY * sqSize
       }
+
+
     })
   }
 
@@ -110,7 +117,7 @@ class Piece {
   getFirstPosition(){
     let pieceLength = this.getLongestLineLength() * this.sqSize
     let pieceHeight = this.getLongestColLength() * this.sqSize
-    let offset = (this.pieceMaxWidth - (pieceLength)) / 2
+    let offset = (this.pieceMaxWidth - (pieceLength * this.zoomCoef)) / 2
     return {
       x: this.index * this.pieceMaxWidth + offset,
       y: this.game_size + 10, // 10px below game
@@ -122,12 +129,15 @@ class Piece {
   
   draw(){
 
+    let pieceLength = this.piecePosition.l * this.zoomCoef
+    let pieceHeight = this.piecePosition.h * this.zoomCoef
+
 
     //TEST
     if (G_DEBUG){
       ctx.strokeStyle = "red"
       ctx.lineWidth = 1
-      ctx.strokeRect(this.piecePosition.x, this.piecePosition.y, this.piecePosition.l, this.piecePosition.h )
+      ctx.strokeRect(this.piecePosition.x, this.piecePosition.y, pieceLength , pieceHeight )
     }
 
 
@@ -138,10 +148,10 @@ class Piece {
       let {x} = this.piecePosition 
         
       line.split('').map(sq => {
-        Square.draw(ctx, this.sqSize, this.gap, this.color, {x, y} )
-        x += this.sqSize 
+        Square.draw(ctx, this.sqSize * this.zoomCoef, this.gap, this.color, {x, y} )
+        x += this.sqSize * this.zoomCoef
       })
-      y += this.sqSize
+      y += this.sqSize * this.zoomCoef
 
       })
 
