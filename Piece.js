@@ -1,7 +1,7 @@
 
 class Piece {
 
-  constructor(canvas, index, game_size, sqSize, gap, nb_pieces){
+  constructor(canvas, index, game_size, sqSize, gap, nb_pieces, onPieceDropFunc){
 
 
     let pieces = [
@@ -52,13 +52,13 @@ class Piece {
     this.piecePosition = this.getFirstPosition()
 
     this.isMoving = false 
-    this.addTouchEvents()
+    this.addTouchEvents(onPieceDropFunc)
 
     return this
     // this.draw()
   }
 
-  addTouchEvents(){
+  addTouchEvents(onPieceDropFunc){
     this.canvas.addEventListener('mousedown', (e)=>{
       let mouseX = e.offsetX
       let mouseY = e.offsetY
@@ -95,7 +95,10 @@ class Piece {
         let snapY = Math.round(this.piecePosition.y / this.sqSize)
         this.piecePosition.x = snapX * sqSize
         this.piecePosition.y = snapY * sqSize
+        onPieceDropFunc(this)
+
       }
+
 
 
     })

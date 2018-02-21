@@ -38,7 +38,7 @@ const COLORS = [
 ]
 
 
-const pieces = []
+let pieces = []
 let grid;
 
 
@@ -51,14 +51,23 @@ function init(){
   grid = new Grid(GRID_SIZE)
 
   // 3 - les pieces
-  for (var i = 0; i < NB_PIECES; i++) {
-    let piece = new Piece(canvas, i, SIZE, sqSize, GAP, NB_PIECES)
-    pieces.push(piece)
-  }
 
 
   render()
 
+}
+
+function createThreeNewPieces(){
+  let pieces = []
+  for (var i = 0; i < NB_PIECES; i++) {
+    let piece = new Piece(canvas, i, SIZE, sqSize, GAP, NB_PIECES, onPieceDrop )
+    pieces.push(piece)
+  }
+  return pieces
+}
+
+function onPieceDrop(piece){
+  pieces[piece.index] = null
 }
 
 
@@ -66,7 +75,17 @@ function init(){
 function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   grid.draw(sqSize, GAP, COLORS)
-  pieces.forEach( p => p.draw() )
+  
+  let temp_pieces = pieces.filter( p => p!= null)
+  
+  if (temp_pieces.length == 0) {
+    pieces = createThreeNewPieces()
+  }
+
+  temp_pieces
+    .sort((a, b) => a.isMoving && !b.isMoving ? 1 : -1) // moving piece on top
+    .forEach( p => p.draw() )
+
   requestAnimationFrame(render)
 
 }
