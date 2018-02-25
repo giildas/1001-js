@@ -12,8 +12,35 @@ class Grid {
   }
 
 
-  changeSquare(colIndex, lineIndex, colorIndex ){
-    this.grid[lineIndex][colIndex] = colorIndex
+  changeSquare(col_index, line_index, color_index ){
+    this.grid[line_index][col_index] = color_index
+  }
+
+  testOverlap(piece, x, y){
+    let overlap = false
+    piece.piece.forEach( (line, line_index) => {
+      line.split('').forEach( (col, col_index)=>{
+        let squareX = col_index + x
+        let squareY = line_index + y
+
+        // if one square only is overlaping, return true
+        if(this.grid[squareY][squareX] != "x"){
+          overlap = true
+        }
+
+      })
+    })
+
+
+    return overlap
+  }
+
+  placePiece(piece, x, y){
+    piece.piece.forEach( (line, line_i) => {
+      line.split('').forEach((color_i, column_i)=>{
+        this.changeSquare(column_i + x, line_i + y, color_i)
+      })
+    })
   }
 
 

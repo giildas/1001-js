@@ -8,7 +8,7 @@ class Piece {
   constructor(canvas, index, game_size, grid_size, sqSize, gap, nb_pieces, onPieceDropFunc){
 
 
-    let pieces = [
+    let pieces = [ // number = color
     "0",
     "11",
     "222",
@@ -47,66 +47,70 @@ class Piece {
   }
 
   addTouchEvents(onPieceDropFunc){
-    this.canvas.addEventListener('mousedown', (e)=>{
+    this.canvas.addEventListener('mousedown', (e)=>this.onMouseDown(e))
+    this.canvas.addEventListener('mousemove', (e)=>this.onMouseMove(e))
+    this.canvas.addEventListener('mouseup', (e)=>this.onMouseUp(e, onPieceDropFunc))
+  }
+
+  onMouseDown(e){
+    let mouseX = e.offsetX
+    let mouseY = e.offsetY
+    console.log("this", this)
+    if (
+      mouseX > this.piecePosition.x &&
+      mouseX < this.piecePosition.x + (this.piecePosition.l * this.zoomCoef) &&
+      mouseY > this.piecePosition.y &&
+      mouseY < this.piecePosition.y + (this.piecePosition.h * this.zoomCoef)
+      ) {
+      this.isMoving = true
+      this.zoomCoef = 1
+      this.piecePosition.x = mouseX - this.piecePosition.l/2
+      this.piecePosition.y = mouseY - this.piecePosition.h
+    }
+  }
+
+  onMouseMove(e){
+    if (this.isMoving) {
       let mouseX = e.offsetX
       let mouseY = e.offsetY
+      this.piecePosition.x = mouseX - this.piecePosition.l/2
+      this.piecePosition.y = mouseY  - this.piecePosition.h
+    }
+  }
+
+  onMouseUp(e, onPieceDropFunc){
+    let mouseX = e.offsetX
+    let mouseY = e.offsetY
+
+    if (this.isMoving) {
+
+      this.isMoving = false
+      let snapX = Math.round(this.piecePosition.x / this.sqSize)
+      let snapY = Math.round(this.piecePosition.y / this.sqSize)
 
       if (
-        mouseX > this.piecePosition.x &&
-        mouseX < this.piecePosition.x + (this.piecePosition.l * this.zoomCoef) &&
-        mouseY > this.piecePosition.y &&
-        mouseY < this.piecePosition.y + (this.piecePosition.h * this.zoomCoef)
-        ) {
-        this.isMoving = true
-        this.zoomCoef = 1
-        this.piecePosition.x = mouseX - this.piecePosition.l/2
-        this.piecePosition.y = mouseY - this.piecePosition.h/2
+        snapX >= 0 &&
+        snapX + this.getLongestLineLength() <= this.grid_size &&
+        snapY >= 0 &&
+        snapY + this.getLongestColLength() <= this.grid_size
+      ) {
+
+        this.piecePosition.x = snapX * this.sqSize
+        this.piecePosition.y = snapY * this.sqSize
+
+        onPieceDropFunc(this, snapX, snapY)
+
+      }else{
+        // the piece is off limits ! it goes back under the board
+        this.reset()
       }
-    })
+    }
+  }
 
-    this.canvas.addEventListener('mousemove', (e)=>{
-      if (this.isMoving) {
-        let mouseX = e.offsetX
-        let mouseY = e.offsetY
-        this.piecePosition.x = mouseX - this.piecePosition.l/2
-        this.piecePosition.y = mouseY - this.piecePosition.h/2
-      }
-    })
-
-    this.canvas.addEventListener('mouseup', (e)=>{
-      let mouseX = e.offsetX
-      let mouseY = e.offsetY
-
-      if (this.isMoving) {
-
-        this.isMoving = false
-        let snapX = Math.round(this.piecePosition.x / this.sqSize)
-        let snapY = Math.round(this.piecePosition.y / this.sqSize)
-
-        if (
-          snapX >= 0 &&
-          snapX + this.getLongestLineLength() <= this.grid_size &&
-          snapY >= 0 &&
-          snapY + this.getLongestColLength() <= this.grid_size
-        ) {
-
-          this.piecePosition.x = snapX * this.sqSize
-          this.piecePosition.y = snapY * this.sqSize
-
-          onPieceDropFunc(this, snapX, snapY)
-        }else{
-          // the piece is off limits ! it goes back under the board
-          this.zoomCoef = this.getZoomCoef(this.sqSize)
-          this.piecePosition = this.getFirstPosition()
-        }
-
-
-
-      }
-
-
-
-    })
+  reset(){
+    // send piece back to original position if off limits or on top of placed piece
+    this.zoomCoef = this.getZoomCoef(this.sqSize)
+    this.piecePosition = this.getFirstPosition()
   }
 
   getLongestLineLength(){
@@ -141,10 +145,9 @@ class Piece {
     let pieceHeight = this.piecePosition.h * this.zoomCoef
 
     let { y } =  this.piecePosition
+
     this.piece.forEach(line => {
-
       let {x} = this.piecePosition
-
       line.split('').map(sq => {
         Square.draw(ctx, this.sqSize * this.zoomCoef, this.gap, colors[sq], {x, y} )
         x += this.sqSize * this.zoomCoef
@@ -152,7 +155,6 @@ class Piece {
       y += this.sqSize * this.zoomCoef
 
       })
-
 
 
   }

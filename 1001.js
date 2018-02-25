@@ -14,7 +14,7 @@ function start_game(){
   const canvas = document.getElementById('1001')
 
   const PX_SIZE = 300
-  const GRID_SIZE = 15 // nb de carrés
+  const GRID_SIZE = 10 // nb de carrés
   const GAP = 6 // 3 px entre chaque carré
   const sqSize = PX_SIZE / GRID_SIZE
   const NB_PIECES = 3
@@ -35,14 +35,9 @@ function start_game(){
   init()
 
   function init(){
-    // 1 la grille
     grid = new Grid(GRID_SIZE)
-
-    // 3 - les pieces
-
-
+    pieces = createThreeNewPieces()
     render()
-
   }
 
   function createThreeNewPieces(){
@@ -55,26 +50,23 @@ function start_game(){
   }
 
   function onPieceDrop(piece, x, y){
-    pieces[piece.index] = null
-      console.log("x", x)
-      console.log("y", y)
 
-    // ici colorier la grille
-    console.log(piece.piece)
-    // x = 0, y = 0
-    piece.piece.forEach( (line, line_i) => {
-     console.log("line_i", line_i)
+    // we see if piece was dropped onto another
+    if ( grid.testOverlap(piece, x, y) ) {
 
-      line.split('').forEach((color_i, column_i)=>{
+      piece.reset()
 
-       console.log("column_i", column_i)
+    }else{
+
+      grid.placePiece(piece, x, y)
+      pieces[piece.index] = null
 
 
-        grid.changeSquare(column_i + x, line_i + y, color_i)
-      })
+      if (pieces.every(p=>p==null)) {
+        pieces = createThreeNewPieces()
+      }
 
-    })
-
+    }
 
   }
 
@@ -88,9 +80,6 @@ function start_game(){
 
 
     let temp_pieces = pieces.filter( p => p!= null)
-    if (temp_pieces.length == 0) {
-      pieces = createThreeNewPieces()
-    }
 
 
     temp_pieces
