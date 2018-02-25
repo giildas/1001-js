@@ -1,4 +1,12 @@
+
+
+
 class Grid {
+  _transpose(a) {
+    return Object.keys(a[0]).map(function(c) {
+      return a.map(function(r) { return r[c]; });
+    });
+  }
   constructor(size, colors) {
     this.grid = []
 
@@ -41,7 +49,44 @@ class Grid {
         this.changeSquare(column_i + x, line_i + y, color_i)
       })
     })
+
+    this.checkCompletedLinesAndColumns()
   }
+
+  checkCompletedLinesAndColumns(){
+    //1 - test
+    let completedLinesIndex = this.getCompletedLine(this.grid)
+    let transposed_grid = this._transpose(this.grid)
+    let completedColsIndex = this.getCompletedLine(transposed_grid)
+
+
+    //2 - remplacement
+    this.grid.forEach((line, line_index)=>{
+
+      line.forEach((square, col_index)=>{
+        if (
+          completedLinesIndex.indexOf(line_index) > -1 ||
+          completedColsIndex.indexOf(col_index) > -1
+        ) {
+          this.grid[line_index][col_index] = "x"
+        }
+      })
+    })
+
+
+
+  }
+
+  getCompletedLine(matrix){
+    let completedLines = []
+    matrix.forEach( (line, line_index) => {
+      if( line.every(sq => sq!="x" ) ) completedLines.push(line_index)
+    })
+    console.log(completedLines)
+    return completedLines
+  }
+
+
 
 
   draw(ctx, sqSize, gap, colors){
@@ -61,3 +106,4 @@ class Grid {
     })
   }
 }
+

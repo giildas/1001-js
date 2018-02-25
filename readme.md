@@ -16,12 +16,12 @@ So far :
   * Don't if a part of it is out the board
   * Don't if another piece is under
 * Create 3 more pieces when the other are dropped
+* Lines conpletion
 
 
 Todo
 -----
 
-* Lines conpletion
 * Piece random angle (0, 90, 180, 270) for more variety
 * Points
 * Calculate that no move is possible -> game is lost
